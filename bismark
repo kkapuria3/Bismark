@@ -1425,7 +1425,7 @@ sub merge_individual_ambig_BAM_files{
     }
 
     warn "Now merging ambiguous BAM files @$tempbam into >>> $merged_name <<<\n";
-    open (OUT,"| $samtools_path view -bSh 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to $merged_name: $!\n";
+    open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to $merged_name: $!\n";
     my $first = 0;
 
     foreach my $temp_bam(@$tempbam){
@@ -1434,10 +1434,10 @@ sub merge_individual_ambig_BAM_files{
 	warn "Merging from file >> $temp_bam <<\n";
 
 	if ($first > 0){
-	    open (IN,"$samtools_path view ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
+	    open (IN,"$samtools_path view -@ 8 ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
 	}
 	else{ # only for the first file we print the header as well
-	    open (IN,"$samtools_path view -h ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
+	    open (IN,"$samtools_path view -@ 8 -h ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
 	}
 
 	while (<IN>){
@@ -1491,7 +1491,7 @@ sub start_methylation_call_procedure_single_ends {
       my $ambig_bam_out = $outfile;
       $ambig_bam_out =~ s/sam$/ambig.bam/;
       warn "Ambiguous BAM output: $ambig_bam_out\n";
-      open (AMBIBAM,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$ambig_bam_out") or die "Failed to write to $ambig_bam_out: $!\n";
+      open (AMBIBAM,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$ambig_bam_out") or die "Failed to write to $ambig_bam_out: $!\n";
   }
 
   if ($cram){ ### Samtools is installed, writing out CRAM directly. This qill require Samtools version 1.2 or higher!
@@ -1499,18 +1499,18 @@ sub start_methylation_call_procedure_single_ends {
       ### This avoids having to change all the the file endings on the way
       if($multicore > 1){
 	  $outfile =~ s/sam$/bam/;
-	  open (OUT,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
+	  open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
       }
       else{ # single-core mode
 	  $outfile =~ s/sam$/cram/;
 	  $final_output_filename = "${output_dir}${outfile}";
-	  open (OUT,"| $samtools_path view -h -C -T $cram_ref 2>/dev/null - > $output_dir$outfile") or die "Failed to write to CRAM file $outfile: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
+	  open (OUT,"| $samtools_path view -@ 8 -h -C -T $cram_ref 2>/dev/null - > $output_dir$outfile") or die "Failed to write to CRAM file $outfile: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
       }
   }
   elsif($bam == 1){ ### Samtools is installed, writing out BAM directly
       $outfile =~ s/sam$/bam/;
       $final_output_filename = "${output_dir}${outfile}";
-      open (OUT,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
+      open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
   }
   elsif($bam == 2){ ### no Samtools found on system. Using GZIP compression instead
       $outfile .= '.gz';
@@ -1696,7 +1696,7 @@ sub start_methylation_call_procedure_paired_ends {
       my $ambig_bam_out = $outfile;
       $ambig_bam_out =~ s/sam$/ambig.bam/;
       warn "Ambiguous BAM output: $ambig_bam_out\n";
-      open (AMBIBAM,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$ambig_bam_out") or die "Failed to write to $ambig_bam_out: $!\n";
+      open (AMBIBAM,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$ambig_bam_out") or die "Failed to write to $ambig_bam_out: $!\n";
   }
 
   $bam = 0 unless (defined $bam);
@@ -1704,18 +1704,18 @@ sub start_methylation_call_procedure_paired_ends {
   if ($cram){ ### Samtools is installed, writing out CRAM directly. This qill require Samtools version 1.2 or higher!
       if ($multicore > 1){
 	  $outfile =~ s/sam$/bam/;
-	  open (OUT,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
+	  open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
       }
       else{ # single-core mode
 	  $outfile =~ s/sam$/cram/;
 	  $final_output_filename = "${output_dir}${outfile}";
-	  open (OUT,"| $samtools_path view -h -C -T $cram_ref 2>/dev/null - > $output_dir$outfile") or die "Failed to write to CRAM file $outfile: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
+	  open (OUT,"| $samtools_path view -@ 8 -h -C -T $cram_ref 2>/dev/null - > $output_dir$outfile") or die "Failed to write to CRAM file $outfile: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
       }
   }
   elsif ($bam == 1){ ### Samtools is installed, writing out BAM directly
       $outfile =~ s/sam$/bam/;
       $final_output_filename = "${output_dir}${outfile}";
-      open (OUT,"| $samtools_path view -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
+      open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > $output_dir$outfile") or die "Failed to write to $outfile: $!\n";
   }
   elsif($bam == 2){ ### no Samtools found on system. Using GZIP compression instead
       $outfile .= '.gz';
