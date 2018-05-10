@@ -1369,10 +1369,10 @@ sub merge_individual_BAM_files{
     warn "Merging from file >> $temp_bam <<\n";
 
     if ($first > 0){
-      open (IN,"$samtools_path view ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
+      open (IN,"$samtools_path view -@ 8 ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
     }
     else{ # only for the first file we print the header as well
-      open (IN,"$samtools_path view -h ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
+      open (IN,"$samtools_path view -@ 8 -h ${output_dir}${temp_bam} |") or die "Failed to read from BAM file ${output_dir}${temp_bam}\n";
     }
 
     while (<IN>){
