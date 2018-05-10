@@ -1353,12 +1353,12 @@ sub merge_individual_BAM_files{
       warn "Now merging BAM files @$tempbam into >>> $merged_name <<<\n";
       $final_output_filename = "${output_dir}${merged_name}";
 
-      open (OUT,"| $samtools_path view -h -C -T $cram_ref 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to CRAM file $merged_name: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
+      open (OUT,"| $samtools_path view -@ 8 -h -C -T $cram_ref 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to CRAM file $merged_name: $!\nPlease note that this option requires Samtools version 1.2 or higher!\n\n";
   }
   else{
       $final_output_filename = "${output_dir}${merged_name}";
       warn "Now merging BAM files @$tempbam into >>> $merged_name <<<\n";
-      open (OUT,"| $samtools_path view -bSh 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to $merged_name: $!\n";
+      open (OUT,"| $samtools_path view -@ 8 -bSh 2>/dev/null - > ${output_dir}${merged_name}") or die "Failed to write to $merged_name: $!\n";
   }
 
   my $first = 0;
